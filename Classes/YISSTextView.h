@@ -16,7 +16,6 @@
 	
 	NSString *_placeholder;
 	UIColor *_placeholderColor;
-
 	BOOL _shouldDrawPlaceholder;
 }
 

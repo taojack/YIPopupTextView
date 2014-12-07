@@ -8,9 +8,6 @@
 
 #import "YISSTextView.h"
 
-#define IS_ARC              (__has_feature(objc_arc))
-
-
 @interface YISSTextView (PrivateMethods)
 - (void)_updateShouldDrawPlaceholder;
 - (void)_textChanged:(NSNotification *)notification;
@@ -35,13 +32,7 @@
 	if ([string isEqual:_placeholder]) {
 		return;
 	}
-	
-#if IS_ARC
     _placeholder = string;
-#else
-	[_placeholder release];
-	_placeholder = [string retain];
-#endif
 	
 	[self _updateShouldDrawPlaceholder];
 }
@@ -52,12 +43,6 @@
 
 - (void)dealloc {
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:UITextViewTextDidChangeNotification object:self];
-	
-#if !IS_ARC
-	[_placeholder release];
-	[_placeholderColor release];
-	[super dealloc];
-#endif
 }
 
 
@@ -81,9 +66,6 @@
 	if (_shouldDrawPlaceholder) {
 		[_placeholderColor set];
 		CGRect drawInRect = CGRectMake(8.0f, 8.0f, self.frame.size.width - 16.0f, self.frame.size.height - 16.0f);
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_7_0)
-		[_placeholder drawInRect:drawInRect withFont:self.font];
-#else
 		NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 		paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
 		paragraphStyle.alignment = NSTextAlignmentLeft;
@@ -91,7 +73,6 @@
                                       NSForegroundColorAttributeName: self.placeholderColor,
                                       NSParagraphStyleAttributeName: paragraphStyle };
 		[_placeholder drawInRect:drawInRect withAttributes:attributes];
-#endif
 	}
 }
 

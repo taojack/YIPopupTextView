@@ -18,12 +18,12 @@
 #   define IS_FLAT_DESIGN          NO
 #endif
 
-#define TEXTVIEW_INSETS     (IS_IPAD ? UIEdgeInsetsMake(30, 30, 30, 30) : UIEdgeInsetsMake(15, 15, 15, 15))
+#define TEXTVIEW_INSETS     (IS_IPAD ? UIEdgeInsetsMake(30, 30, 30, 30) : UIEdgeInsetsMake(25, 15, 15, 15))
 #define TEXT_SIZE           (IS_IPAD ? 32 : 16)
 #define COUNT_SIZE          (IS_IPAD ? 32 : 16)
 #define COUNT_MARGIN        (IS_IPAD ? 20 : 10)
-#define CLOSE_IMAGE_WIDTH   (IS_IPAD ? 60 : 30)
-#define CLOSE_BUTTON_WIDTH  (IS_IPAD ? 88 : 44)
+#define CLOSE_IMAGE_WIDTH   (IS_IPAD ? 60 : 36)
+#define CLOSE_BUTTON_WIDTH  (IS_IPAD ? 88 : 52.8)
 
 #define ANIMATION_DURATION  0.25
 
@@ -234,8 +234,8 @@ typedef enum {
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         self.font = [UIFont systemFontOfSize:TEXT_SIZE];
         self.keyboardAppearance = UIKeyboardAppearanceAlert;
-        self.autocorrectionType = UITextAutocorrectionTypeNo;
-        self.autocapitalizationType = UITextAutocapitalizationTypeNone;
+//        self.autocorrectionType = UITextAutocorrectionTypeNo;
+//        self.autocapitalizationType = UITextAutocapitalizationTypeNone;
         self.layer.cornerRadius = 10;
         self.backgroundColor = [UIColor whiteColor];
         [_popupView addSubview:self];
@@ -243,18 +243,14 @@ typedef enum {
         if (maxCount > 0) {
             _countLabel = [[UILabel alloc] initWithFrame:CGRectZero];
             _countLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleTopMargin;
-#if (__IPHONE_OS_VERSION_MAX_ALLOWED < __IPHONE_6_0)
-			_countLabel.textAlignment = UITextAlignmentRight;
-#else
 			_countLabel.textAlignment = NSTextAlignmentRight;
-#endif
             _countLabel.backgroundColor = [UIColor clearColor];
             _countLabel.textColor = [UIColor lightGrayColor];
             _countLabel.font = [UIFont boldSystemFontOfSize:COUNT_SIZE];
             [_popupView addSubview:_countLabel];
         }
         
-        CGFloat buttonRisingRatio = 0.3;
+        CGFloat buttonRisingRatio = 0.4;
         
         // close (cancel) button
         if (buttonStyle == YIPopupTextViewButtonStyleRightCancel ||
@@ -445,13 +441,14 @@ typedef enum {
 {
     // stop observing before resignFirstResponder, for not to adjust frame while dismissing
     [self stopObservingNotifications];
+    NSString *text = self.text;
     
     if ([self isFirstResponder]) {
         [self resignFirstResponder];
     }
     
     if ([self.delegate respondsToSelector:@selector(popupTextView:willDismissWithText:cancelled:)]) {
-        [self.delegate popupTextView:self willDismissWithText:self.text cancelled:cancelled];
+        [self.delegate popupTextView:self willDismissWithText:text cancelled:cancelled];
     }
     
     [UIView animateWithDuration:ANIMATION_DURATION animations:^{
@@ -462,7 +459,7 @@ typedef enum {
         
         if (finished) {
             if ([self.delegate respondsToSelector:@selector(popupTextView:didDismissWithText:cancelled:)]) {
-                [self.delegate popupTextView:self didDismissWithText:self.text cancelled:cancelled];
+                [self.delegate popupTextView:self didDismissWithText:text cancelled:cancelled];
             }
             
             [_backgroundView removeFromSuperview];
